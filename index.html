@@ -66,8 +66,9 @@
 
             const startDrag = (card, clientX, clientY) => {
                 draggingCard = card;
-                offsetX = clientX - card.getBoundingClientRect().left;
-                offsetY = clientY - card.getBoundingClientRect().top;
+                const rect = card.getBoundingClientRect();
+                offsetX = clientX - rect.left;
+                offsetY = clientY - rect.top;
                 card.style.zIndex = 1000; // Bring the card to the front
                 card.style.cursor = 'grabbing';
                 card.classList.add('dragging');
@@ -89,10 +90,33 @@
                 }
             };
 
+            const handleTouchStart = (e) => {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const card = touch.target.closest('.card');
+                    if (card && cards.includes(card) && card !== document.querySelector('.last-card')) {
+                        e.preventDefault(); // Prevent default touch behavior
+                        startDrag(card, touch.clientX, touch.clientY);
+                    }
+                }
+            };
+
+            const handleTouchMove = (e) => {
+                if (draggingCard && e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    e.preventDefault(); // Prevent default touch behavior
+                    onDrag(touch.clientX, touch.clientY);
+                }
+            };
+
+            const handleTouchEnd = () => {
+                endDrag();
+            };
+
+            // Mouse events
             cards.forEach((card, index) => {
                 card.style.zIndex = cards.length - index; // Stack cards by index
 
-                // Mouse events
                 card.addEventListener('mousedown', (e) => {
                     if (index === currentIndex) { // Only allow dragging of the current card
                         startDrag(card, e.clientX, e.clientY);
@@ -102,21 +126,9 @@
                 document.addEventListener('mouseup', endDrag);
 
                 // Touch events
-                card.addEventListener('touchstart', (e) => {
-                    if (index === currentIndex) { // Only allow dragging of the current card
-                        e.preventDefault(); // Prevent default touch behavior
-                        const touch = e.touches[0];
-                        startDrag(card, touch.clientX, touch.clientY);
-                    }
-                }, { passive: false });
-                document.addEventListener('touchmove', (e) => {
-                    if (index === currentIndex) { // Only drag if this is the current card
-                        e.preventDefault(); // Prevent default touch behavior
-                        const touch = e.touches[0];
-                        onDrag(touch.clientX, touch.clientY);
-                    }
-                }, { passive: false });
-                document.addEventListener('touchend', endDrag);
+                card.addEventListener('touchstart', handleTouchStart, { passive: false });
+                document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                document.addEventListener('touchend', handleTouchEnd);
 
                 // Click event to remove card
                 card.addEventListener('click', () => {
