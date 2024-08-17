@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uncover the Mystery🎀</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #87CEFA; /* Cool shade of blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Brush Script MT', cursive; /* Handwritten font */
+        }
+
+        .card-container {
+            position: relative;
+            width: 300px; /* Fixed size for consistent layout */
+            height: 200px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: black;
+            text-align: center;
+            cursor: grab;
+            z-index: 1; /* Default z-index */
+            transition: opacity 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+        }
+
+        .card:last-of-type {
+            cursor: default; /* No grabbing cursor for the last card */
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">Drag the cards to reveal a mystery 😋</div>
+        <div class="card">How can someone be so cute? 😍🎀</div>
+        <div class="card">Not sugarcoating at all but you are the cutest person with such a mellifluous voice I have come ever across✨</div>
+        <div class="card">I really would like to have a chat with you</div>
+        <div class="card">Is your number in my 'flight manual'? Because I want to make sure I can 'land' a date with you! 🥹</div>
+        <div class="card last-card">❤️🎀</div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card:not(.last-card)');
+            let draggingCard = null;
+            let offsetX = 0, offsetY = 0;
+            let currentIndex = 0; // Start from the first card
+
+            const startDrag = (card, clientX, clientY) => {
+                draggingCard = card;
+                offsetX = clientX - card.getBoundingClientRect().left;
+                offsetY = clientY - card.getBoundingClientRect().top;
+                card.style.zIndex = 1000; // Bring the card to the front
+                card.style.cursor = 'grabbing';
+            };
+
+            const onDrag = (clientX, clientY) => {
+                if (draggingCard) {
+                    draggingCard.style.transform = `translate(${clientX - offsetX}px, ${clientY - offsetY}px)`;
+                }
+            };
+
+            const endDrag = () => {
+                if (draggingCard) {
+                    draggingCard.style.zIndex = ''; // Reset z-index after drag
+                    draggingCard.style.cursor = 'grab';
+                    draggingCard = null;
+                }
+            };
+
+            cards.forEach((card, index) => {
+                card.style.zIndex = cards.length - index; // Stack cards by index
+
+                // Mouse events
+                card.addEventListener('mousedown', (e) => {
+                    if (index === currentIndex) { // Only allow dragging of the current card
+                        startDrag(card, e.clientX, e.clientY);
+                    }
+                });
+                document.addEventListener('mousemove', (e) => onDrag(e.clientX, e.clientY));
+                document.addEventListener('mouseup', endDrag);
+
+                // Touch events
+                card.addEventListener('touchstart', (e) => {
+                    if (index === currentIndex) { // Only allow dragging of the current card
+                        const touch = e.touches[0];
+                        startDrag(card, touch.clientX, touch.clientY);
+                    }
+                });
+                document.addEventListener('touchmove', (e) => {
+                    if (index === currentIndex) { // Only drag if this is the current card
+                        const touch = e.touches[0];
+                        onDrag(touch.clientX, touch.clientY);
+                    }
+                });
+                document.addEventListener('touchend', endDrag);
+
+                // Click event to remove card
+                card.addEventListener('click', () => {
+                    if (index === currentIndex && card !== document.querySelector('.last-card')) {
+                        card.style.opacity = '0';
+                        setTimeout(() => {
+                            card.remove();
+                            currentIndex++; // Move to the next card
+                        }, 300); // Remove card after fade-out
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
