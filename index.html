@@ -6,138 +6,84 @@
     <title>Uncover the Mystery🎀</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #87CEFA; /* Cool shade of blue */
+            background-color: #87CEEB; /* Cool shade of blue (Sky Blue) */
+            font-family: 'Lucida Handwriting', cursive;
+            color: black;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Brush Script MT', cursive; /* Handwritten font */
-            overflow: hidden; /* Prevent scrolling when dragging */
+            margin: 0;
+            overflow: hidden;
         }
 
         .card-container {
             position: relative;
-            width: 300px; /* Fixed size for consistent layout */
-            height: 200px;
+            width: 80%;
+            max-width: 350px;
+            height: auto;
         }
 
         .card {
+            background-image: url('https://www.transparenttextures.com/patterns/ruled-paper.png');
+            background-color: white;
+            border: 1px solid black;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.2em;
             position: absolute;
             width: 100%;
-            height: 100%;
-            background-color: white;
-            border: 2px solid black;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            height: auto;
+            top: 0;
+            left: 0;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 18px;
-            color: black;
-            text-align: center;
-            cursor: grab;
-            z-index: 1; /* Default z-index */
-            transition: opacity 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-            touch-action: none; /* Prevent default touch behavior */
+            align-items: center;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 1;
         }
 
-        .card:last-of-type {
-            cursor: default; /* No grabbing cursor for the last card */
+        .card:last-child {
+            z-index: 1; /* Ensure the last card stays on top */
+            cursor: default; /* No pointer on the last card */
+            pointer-events: none; /* Prevent any interaction */
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                font-size: 1em;
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="card-container">
-        <div class="card">Drag the cards to reveal a mystery 😋</div>
-        <div class="card">How can someone be so cute? 😍🎀</div>
-        <div class="card">Not sugarcoating at all but you are the cutest person with such a mellifluous voice I have come ever across✨</div>
-        <div class="card">I really would like to have a chat with you</div>
-        <div class="card">Is your number in my 'flight manual'? Because I want to make sure I can 'land' a date with you! 🥹</div>
-        <div class="card last-card">❤️🎀</div>
+        <div class="card">Hi, thank you for taking out the time to participate in my small survey. Click for the first question.</div>
+        <div class="card">How do you manage to be soo cute but so damn fine at the same time?🎀</div>
+        <div class="card">Did the first question make you smile? If yes then click for the next card, if no I hope the next one will :(</div>
+        <div class="card">Are you maths? Cause you are something I just can't pass (would even self depreciate for you)</div>
+        <div class="card">Do you think maybe we can grab some coffee sometime? Or do I need to make a few more surveys 👉👈</div>
+        <div class="card">❤️🎀</div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.card:not(.last-card)');
-            let draggingCard = null;
-            let offsetX = 0, offsetY = 0;
-            let currentIndex = 0; // Start from the first card
+            const cards = document.querySelectorAll('.card');
 
-            const startDrag = (card, clientX, clientY) => {
-                draggingCard = card;
-                const rect = card.getBoundingClientRect();
-                offsetX = clientX - rect.left;
-                offsetY = clientY - rect.top;
-                card.style.zIndex = 1000; // Bring the card to the front
-                card.style.cursor = 'grabbing';
-                card.classList.add('dragging');
-            };
-
-            const onDrag = (clientX, clientY) => {
-                if (draggingCard) {
-                    draggingCard.style.transform = `translate(${clientX - offsetX}px, ${clientY - offsetY}px)`;
-                }
-            };
-
-            const endDrag = () => {
-                if (draggingCard) {
-                    draggingCard.style.zIndex = ''; // Reset z-index after drag
-                    draggingCard.style.cursor = 'grab';
-                    draggingCard.classList.remove('dragging');
-                    draggingCard.style.transform = ''; // Reset transform
-                    draggingCard = null;
-                }
-            };
-
-            const handleTouchStart = (e) => {
-                if (e.touches.length === 1) {
-                    const touch = e.touches[0];
-                    const card = touch.target.closest('.card');
-                    if (card && cards.includes(card) && card !== document.querySelector('.last-card')) {
-                        e.preventDefault(); // Prevent default touch behavior
-                        startDrag(card, touch.clientX, touch.clientY);
-                    }
-                }
-            };
-
-            const handleTouchMove = (e) => {
-                if (draggingCard && e.touches.length === 1) {
-                    const touch = e.touches[0];
-                    e.preventDefault(); // Prevent default touch behavior
-                    onDrag(touch.clientX, touch.clientY);
-                }
-            };
-
-            const handleTouchEnd = () => {
-                endDrag();
-            };
-
-            // Mouse events
             cards.forEach((card, index) => {
-                card.style.zIndex = cards.length - index; // Stack cards by index
+                card.style.zIndex = cards.length - index; // Stack cards on top of each other
 
-                card.addEventListener('mousedown', (e) => {
-                    if (index === currentIndex) { // Only allow dragging of the current card
-                        startDrag(card, e.clientX, e.clientY);
-                    }
-                });
-                document.addEventListener('mousemove', (e) => onDrag(e.clientX, e.clientY));
-                document.addEventListener('mouseup', endDrag);
-
-                // Touch events
-                card.addEventListener('touchstart', handleTouchStart, { passive: false });
-                document.addEventListener('touchmove', handleTouchMove, { passive: false });
-                document.addEventListener('touchend', handleTouchEnd);
-
-                // Click event to remove card
                 card.addEventListener('click', () => {
-                    if (index === currentIndex && card !== document.querySelector('.last-card')) {
+                    if (index !== cards.length - 1) {
+                        card.style.transform = 'translateY(-150%)';
                         card.style.opacity = '0';
+                        card.style.pointerEvents = 'none'; // Prevent further clicks on the same card
                         setTimeout(() => {
-                            card.remove();
-                            currentIndex++; // Move to the next card
-                        }, 300); // Remove card after fade-out
+                            card.style.display = 'none';
+                        }, 500);
                     }
                 });
             });
