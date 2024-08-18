@@ -19,7 +19,7 @@
 
         .card-container {
             position: relative;
-            width: 80%;
+            width: 90%; /* Slightly wider on mobile */
             max-width: 350px;
             height: auto;
         }
@@ -52,9 +52,16 @@
         }
 
         @media (max-width: 600px) {
+            .card-container {
+                width: 95%; /* Adjust container width on small screens */
+            }
+
             .card {
                 font-size: 1em;
                 padding: 15px;
+                max-width: 95%;
+                left: 50%;
+                transform: translateX(-50%); /* Center cards on mobile */
             }
         }
     </style>
